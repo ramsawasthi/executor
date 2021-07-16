@@ -1,5 +1,6 @@
 package com.til.spring_boot;
 
+import jdk.nashorn.internal.codegen.CompilerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,17 +34,11 @@ public class MainApp implements CommandLineRunner {
     @Override
     public void run(String... args) {
         LOG.info("EXECUTING : command line runner");
-        Map<String, String> m = new HashMap<String,String>();
+        String [] arrayStr = {"One", "Two", "Three", "Four", "Five", "Six","Seven","Eight","Nine","Ten"};
 
-        Callable<Map<String,String>> callableTask = () -> {
-            TimeUnit.MILLISECONDS.sleep(300);
-            m.put(Thread.currentThread().getId()+"", Thread.currentThread().getName());
-            System.out.println("Executing Task :" + Thread.currentThread().getName()) ;
-            return m;
-        };
 
         for (int i = 0 ; i < 10 ; i++){
-            Future<Map<String,String>> future = runnerService.executeWithResult(callableTask);
+            Future<Map<String,String>> future = runnerService.executeWithResult(doTask(arrayStr[i]));
             Map<String,String> result = null;
             try {
                 result = future.get();
@@ -54,6 +49,20 @@ public class MainApp implements CommandLineRunner {
         }
 
         runnerService.shutdown();
+    }
+
+    public Callable<Map<String,String>> doTask(String s) {
+        Map<String, String> m = new HashMap<String,String>();
+
+        Callable<Map<String,String>> callableTask = () -> {
+            TimeUnit.MILLISECONDS.sleep(300);
+            m.put(Thread.currentThread().getId()+":" + s, Thread.currentThread().getName());
+            System.out.println("Executing Task :" + Thread.currentThread().getName()) ;
+            return m;
+        };
+        return callableTask;
+
+
     }
 
 
